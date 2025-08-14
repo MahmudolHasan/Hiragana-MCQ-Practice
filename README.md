@@ -1,1 +1,2 @@
-# Bjet_Hiragana_MCQ-Test-Practice-
+# Hiragana_MCQ_Test
+This is a fun project o learn Hiragana. 
