@@ -326,49 +326,6 @@
         font-family: 'Noto Sans JP', 'Segoe UI', 'Meiryo', 'Yu Gothic',
           'MS PGothic', sans-serif;
       }
-      /* Login Modal */
-      #loginModal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-      }
-      #loginModal .login-box {
-        background: #fff;
-        padding: 30px 40px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px #0003;
-        min-width: 300px;
-      }
-      #loginModal input {
-        width: 100%;
-        padding: 8px;
-        font-size: 1em;
-        margin-bottom: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-      }
-      #loginModal button {
-        width: 100%;
-        padding: 10px;
-        font-size: 1em;
-        background: #ff9900;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-      #loginModal #loginError {
-        color: #c00;
-        margin-top: 10px;
-        display: none;
-      }
     </style>
   </head>
   <body>
@@ -399,15 +356,15 @@
           <input type="radio" name="quizMode" value="sound" checked />
           Sound → Hiragana
         </label>
-        <label class="hidden-quizmode" style="display: none">
+        <label>
           <input type="radio" name="quizMode" value="romaji" />
           Romaji → Hiragana
         </label>
-        <label class="hidden-quizmode" style="display: none">
+        <label>
           <input type="radio" name="quizMode" value="sound2romaji" />
           Sound → Romaji
         </label>
-        <label class="hidden-quizmode" style="display: none">
+        <label>
           <input type="radio" name="quizMode" value="hiragana2romaji" />
           Hiragana → Romaji
         </label>
@@ -417,30 +374,16 @@
         <button id="normalModeBtn" type="button" class="active">
           Normal Mode
         </button>
-        <button
-          id="rangeModeBtn"
-          type="button"
-          class="hidden-quizmode"
-          style="display: none"
-        >
-          Range Mode
-        </button>
-        <button
-          id="romakiModeBtn"
-          type="button"
-          class="hidden-quizmode"
-          style="display: none"
-        >
-          Romaji Mode
-        </button>
+        <button id="rangeModeBtn" type="button">Range Mode</button>
+        <button id="romakiModeBtn" type="button">Romaji Mode</button>
       </div>
 
       <div class="romaki-controls" id="romakiControls" style="display: none">
-        <label class="hidden-quizmode" style="display: none">
+        <label>
           <input type="radio" name="romakiMode" value="sound2romaji" checked />
           Sound → Romaji
         </label>
-        <label class="hidden-quizmode" style="display: none">
+        <label>
           <input type="radio" name="romakiMode" value="hiragana2romaji" />
           Hiragana → Romaji
         </label>
@@ -478,35 +421,6 @@
         <button id="submitBtn" onclick="submitQuiz()" disabled>Submit</button>
       </div>
     </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" style="display: none">
-      <div class="login-box">
-        <h2 style="margin-top: 0">Login</h2>
-        <input
-          id="loginUser"
-          type="text"
-          placeholder="Username"
-          autocomplete="username"
-        />
-        <input
-          id="loginPass"
-          type="password"
-          placeholder="Password"
-          autocomplete="current-password"
-        />
-        <button onclick="doLogin()">Login</button>
-        <div id="loginError">Invalid credentials.</div>
-      </div>
-    </div>
-
-    <button
-      id="showLoginBtn"
-      style="position: fixed; bottom: 18px; right: 18px; z-index: 1000"
-    >
-      🔒 Login
-    </button>
-
     <script>
       const hiragana = [
         { char: 'あ', romaji: 'a', audioIndex: 1 },
@@ -567,9 +481,9 @@
       let japaneseFont = 'default'; // 'default' or 'noto'
       let currentQuizMainMode = 'main'; // 'main' or 'romaki'
       let voiceMode = 'voice01'; // 'voice01', 'voice02', 'random'
-      let isLoggedIn = false;
 
       function preloadAudioFiles() {
+        // Preload both voice01 and voice02
         hiragana.forEach((item) => {
           audioElements.voice01[item.char] = new Audio(
             `hiragana_chunks/voice_${item.audioIndex}.mp3`
@@ -776,6 +690,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
+      // Play audio from selected voice folder, or random if set
       function playSound(char) {
         let audio;
         if (voiceMode === 'random') {
@@ -869,30 +784,6 @@
 
       function updateVoiceMode() {
         voiceMode = document.getElementById('voiceSelect').value;
-      }
-
-      // LOGIN LOGIC
-      function doLogin() {
-        var user = document.getElementById('loginUser').value.trim();
-        var pass = document.getElementById('loginPass').value;
-        if (user === 'Bejt' && pass === 'Bjet2025') {
-          document.getElementById('loginModal').style.display = 'none';
-          isLoggedIn = true;
-          showHiddenQuizModes();
-        } else {
-          document.getElementById('loginError').style.display = 'block';
-        }
-      }
-
-      function showHiddenQuizModes() {
-        document.querySelectorAll('.hidden-quizmode').forEach((el) => {
-          el.style.display = '';
-        });
-      }
-      function hideHiddenQuizModes() {
-        document.querySelectorAll('.hidden-quizmode').forEach((el) => {
-          el.style.display = 'none';
-        });
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -1008,44 +899,6 @@
         // Initial mode
         updateVoiceMode();
         switchToNormalMode();
-
-        // Hide advanced modes by default
-        hideHiddenQuizModes();
-
-        // Login modal logic
-        document.getElementById('showLoginBtn').onclick = function () {
-          document.getElementById('loginModal').style.display = 'flex';
-          document.getElementById('loginError').style.display = 'none';
-          document.getElementById('loginUser').value = '';
-          document.getElementById('loginPass').value = '';
-          document.getElementById('loginUser').focus();
-        };
-        document
-          .getElementById('loginUser')
-          .addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') document.getElementById('loginPass').focus();
-          });
-        document
-          .getElementById('loginPass')
-          .addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') doLogin();
-          });
-        document
-          .getElementById('loginUser')
-          .addEventListener('input', function () {
-            document.getElementById('loginError').style.display = 'none';
-          });
-        document
-          .getElementById('loginPass')
-          .addEventListener('input', function () {
-            document.getElementById('loginError').style.display = 'none';
-          });
-        // Hide modal on click outside
-        document
-          .getElementById('loginModal')
-          .addEventListener('click', function (e) {
-            if (e.target === this) this.style.display = 'none';
-          });
       });
     </script>
   </body>
